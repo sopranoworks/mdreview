@@ -77,6 +77,7 @@ func (s *MCPServer) Run() {
 
 		var req JSONRPCRequest
 		if err := json.Unmarshal(line, &req); err != nil {
+			fmt.Fprintf(os.Stderr, "Error unmarshaling request: %v\n", err)
 			continue
 		}
 
@@ -116,6 +117,7 @@ func (s *MCPServer) Run() {
 		case "tools/call":
 			var params CallToolParams
 			if err := json.Unmarshal(req.Params, &params); err != nil {
+				fmt.Fprintf(os.Stderr, "Error unmarshaling tool params: %v\n", err)
 				resp.Error = map[string]interface{}{
 					"code":    -32602,
 					"message": "Invalid params",
@@ -153,8 +155,13 @@ func (s *MCPServer) Run() {
 			continue
 		}
 
-		out, _ := json.Marshal(resp)
-		fmt.Println(string(out))
+		out, err := json.Marshal(resp)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error marshaling response: %v\n", err)
+			continue
+		}
+		os.Stdout.Write(out)
+		os.Stdout.Write([]byte("\n"))
 	}
 }
 
