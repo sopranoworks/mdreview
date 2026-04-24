@@ -1,0 +1,29 @@
+{
+  "name": "mdreview",
+  "version": "0.1.0",
+  "description": "MCP server for rendering Markdown to HTML with Tailscale-accessible previews.",
+  "main": "mdreview",
+  "mcpServers": {
+    "mdreview": {
+      "command": "./mdreview",
+      "args": [
+        "-port",
+        "${user_config.port}",
+        "-workspace",
+        "${user_config.workspace}"
+      ]
+    }
+  },
+  "userConfig": {
+    "port": {
+      "type": "string",
+      "description": "Port for the HTTP preview server",
+      "default": "8080"
+    },
+    "workspace": {
+      "type": "string",
+      "description": "Path to the workspace root to allow previews from",
+      "default": "."
+    }
+  }
+}
