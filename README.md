@@ -21,31 +21,38 @@ This initial release includes the core MCP server, HTML rendering with `goldmark
 
 ### 1. Register with Gemini CLI
 
-To make `mdreview` persistent and available in all projects:
+#### Option A: Install from GitHub (Gemini CLI - Recommended)
+This is the easiest way to install the extension directly from the repository:
 
-#### Option A: Global MCP Server (Recommended)
-This registers the server directly in your `~/.gemini/settings.json`:
+```bash
+gemini extensions install https://github.com/sopranoworks/mdreview
+```
+
+#### Option B: Global MCP Server (Gemini CLI)
+To register the server directly in your `~/.gemini/settings.json` (useful if you have the binary locally):
 
 ```bash
 gemini mcp add --scope user mdreview go run bootstrap.go -port 8080 -workspace .
 ```
 
-#### Option B: Link as an Extension
-Link this directory to enable the plugin manifest and hooks:
+#### Option C: Link as an Extension (Gemini CLI)
+Link this directory to enable the plugin manifest and hooks for development:
 
 ```bash
 gemini extensions link .
 ```
 
-#### Option C: Claude Code (Plugin)
-Claude Code supports direct plugin installation. Installation is **Auto-Build** out of the box:
+### 2. Register with Claude Code
+
+#### Option D: Claude Code (Plugin)
+Claude Code supports direct plugin installation from GitHub. Installation is **Auto-Build** out of the box:
 
 ```bash
 # Install and it just works
 claude plugin add github:sopranoworks/mdreview
 ```
 
-### 2. (Optional) Manual Build
+### 3. (Optional) Manual Build
 The server will automatically build itself on the first run. However, if you'd like to build the binary manually:
 
 ```bash
