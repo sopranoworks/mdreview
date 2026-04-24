@@ -27,7 +27,7 @@ To make `mdreview` persistent and available in all projects:
 This registers the server directly in your `~/.gemini/settings.json`:
 
 ```bash
-gemini mcp add --scope user mdreview go run . -port 8080 -workspace .
+gemini mcp add --scope user mdreview go run bootstrap.go -port 8080 -workspace .
 ```
 
 #### Option B: Link as an Extension
@@ -38,22 +38,18 @@ gemini extensions link .
 ```
 
 #### Option C: Claude Code (Plugin)
-Claude Code supports direct plugin installation. Installation is **Zero-Build** out of the box:
+Claude Code supports direct plugin installation. Installation is **Auto-Build** out of the box:
 
 ```bash
 # Install and it just works
 claude plugin add github:sopranoworks/mdreview
 ```
 
-### 2. (Optional) Build for Performance
-For maximum performance, you can build a binary and update your registration to use it instead of `go run .`:
+### 2. (Optional) Manual Build
+The server will automatically build itself on the first run. However, if you'd like to build the binary manually:
 
 ```bash
-# 1. Build
 go build -o mdreview
-
-# 2. (For Option A) Update registration
-gemini mcp add --scope user mdreview ./mdreview -port 8080 -workspace .
 ```
 
 ### 3. Verify Installation

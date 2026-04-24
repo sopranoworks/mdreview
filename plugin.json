@@ -8,7 +8,7 @@
       "command": "go",
       "args": [
         "run",
-        ".",
+        "bootstrap.go",
         "-port",
         "${user_config.port}",
         "-workspace",
