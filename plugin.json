@@ -5,8 +5,10 @@
   "main": "mdreview",
   "mcpServers": {
     "mdreview": {
-      "command": "./mdreview",
+      "command": "go",
       "args": [
+        "run",
+        ".",
         "-port",
         "${user_config.port}",
         "-workspace",

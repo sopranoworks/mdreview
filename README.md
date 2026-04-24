@@ -17,62 +17,47 @@ This initial release includes the core MCP server, HTML rendering with `goldmark
 
 ## Installation
 
-### 1. Build the Binary
+`mdreview` supports **zero-setup execution**. If you have Go installed (version 1.23+), you can simply install and it will "just work" everywhere—Windows, macOS, and Linux.
 
-Ensure you have Go installed (version 1.23+ recommended), then run:
+### 1. Register with Gemini CLI
 
-```bash
-go build -o mdreview
-```
-
-This will create a `mdreview` executable in the root directory.
-
-### 2. Register with Gemini CLI
-
-To make `mdreview` persistent and available in all projects, you can add it to your global configuration:
+To make `mdreview` persistent and available in all projects:
 
 #### Option A: Global MCP Server (Recommended)
 This registers the server directly in your `~/.gemini/settings.json`:
 
 ```bash
-gemini mcp add --scope user mdreview ./mdreview -port 8080 -workspace .
+gemini mcp add --scope user mdreview go run . -port 8080 -workspace .
 ```
 
-#### Option B: Link as an Extension (Gemini CLI)
-If you want to use the `plugin.json` manifest (for agent integration/hooks), link this directory:
+#### Option B: Link as an Extension
+Link this directory to enable the plugin manifest and hooks:
 
 ```bash
 gemini extensions link .
 ```
 
 #### Option C: Claude Code (Plugin)
-Claude Code supports direct plugin installation. After adding, you must build the binary manually:
+Claude Code supports direct plugin installation. Installation is **Zero-Build** out of the box:
 
 ```bash
-# 1. Install the plugin
+# Install and it just works
 claude plugin add github:sopranoworks/mdreview
-
-# 2. Build the binary
-cd ~/.claude/plugins/mdreview
-go build -o mdreview
 ```
 
-This installation method also enables the **@mdreview** agent within Claude Code, allowing you to simply say:
-`@mdreview preview this README.md`
-
-#### Option D: Install directly from GitHub (Gemini CLI)
-You can install the extension directly from the repository. Note that you will still need to build the binary manually after installation:
+### 2. (Optional) Build for Performance
+For maximum performance, you can build a binary and update your registration to use it instead of `go run .`:
 
 ```bash
-# 1. Install the extension
-gemini extensions install https://github.com/sopranoworks/mdreview/
-
-# 2. Build the binary
-cd ~/.gemini/extensions/mdreview
+# 1. Build
 go build -o mdreview
+
+# 2. (For Option A) Update registration
+gemini mcp add --scope user mdreview ./mdreview -port 8080 -workspace .
 ```
 
 ### 3. Verify Installation
+
 
 Restart your Gemini CLI session and check the connected servers:
 
