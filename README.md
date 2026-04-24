@@ -38,11 +38,18 @@ This registers the server directly in your `~/.gemini/settings.json`:
 gemini mcp add --scope user mdreview ./mdreview -port 8080 -workspace .
 ```
 
-#### Option B: Link as an Extension
+#### Option B: Link as an Extension (Gemini CLI)
 If you want to use the `plugin.json` manifest (for agent integration/hooks), link this directory:
 
 ```bash
 gemini extensions link .
+```
+
+#### Option C: Claude Code
+To register the server with Claude Code globally:
+
+```bash
+claude mcp add mdreview --scope user --command "./mdreview" --args "-port","8080","-workspace","."
 ```
 
 ### 3. Verify Installation
