@@ -68,10 +68,13 @@ Once connected, an agent can call the `preview_markdown` tool:
 
 ## Configuration
 
-The server can be configured via `plugin.json` or CLI flags:
+The server can be configured via flags or environment variables:
 
-- `-port`: The port for the HTTP side-car (default: `8080`).
+- `-port`: The **preferred** port for the HTTP side-car (default: `8080`).
 - `-workspace`: The root directory for file access validation (default: `.`).
+
+**Automatic Port Selection:**
+If the requested port (e.g., 8080) is already in use by another application, `mdreview` will automatically search for and bind to an available port. It will log the actual port used to `stderr`, and the `preview_markdown` tool will always return URLs with the correct, active port. You do not need to manually change the port unless you have a specific requirement.
 
 ## Security
 

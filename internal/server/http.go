@@ -2,10 +2,14 @@ package server
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 )
 
-func StartHTTPServer(port int, store *Store) error {
+// StartHTTPServer starts the HTTP server on the specified port.
+// If port is 0, it will pick an available port.
+// It returns the actual port used and an error if any.
+func StartHTTPServer(port int, store *Store) (int, error) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/rev/", func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Path[len("/rev/"):]
@@ -22,6 +26,19 @@ func StartHTTPServer(port int, store *Store) error {
 		fmt.Fprint(w, content)
 	})
 
-	addr := fmt.Sprintf(":%d", port)
-	return http.ListenAndServe(addr, mux)
+	// Use net.Listen to allow for port 0 (auto-selection)
+	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	if err != nil {
+		return 0, err
+	}
+
+	actualPort := ln.Addr().(*net.TCPAddr).Port
+
+	go func() {
+		if err := http.Serve(ln, mux); err != nil && err != http.ErrServerClosed {
+			fmt.Printf("HTTP server error: %v\n", err)
+		}
+	}()
+
+	return actualPort, nil
 }

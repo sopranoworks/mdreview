@@ -31,16 +31,20 @@ func main() {
 
 	store := server.NewStore()
 
-	// Start HTTP Preview Server in background
-	go func() {
-		fmt.Fprintf(os.Stderr, "Starting HTTP preview server on port %d...\n", *port)
-		if err := server.StartHTTPServer(*port, store); err != nil {
-			log.Fatalf("HTTP server failed: %v", err)
+	// Start HTTP Preview Server
+	actualPort, err := server.StartHTTPServer(*port, store)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to start HTTP server on port %d: %v. Retrying with automatic port selection...\n", *port, err)
+		actualPort, err = server.StartHTTPServer(0, store)
+		if err != nil {
+			log.Fatalf("Critical: Failed to start HTTP server even with automatic port: %v", err)
 		}
-	}()
+	}
+
+	fmt.Fprintf(os.Stderr, "HTTP preview server active on port %d\n", actualPort)
 
 	// Start MCP Server (stdio)
 	fmt.Fprintf(os.Stderr, "Starting MCP server (workspace: %s)...\n", *workspace)
-	mcpServer := mcp.NewMCPServer(*workspace, *port, store)
+	mcpServer := mcp.NewMCPServer(*workspace, actualPort, store)
 	mcpServer.Run()
 }
