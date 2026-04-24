@@ -45,12 +45,20 @@ If you want to use the `plugin.json` manifest (for agent integration/hooks), lin
 gemini extensions link .
 ```
 
-#### Option C: Claude Code
-To register the server with Claude Code globally:
+#### Option C: Claude Code (Plugin)
+Claude Code supports direct plugin installation. After adding, you must build the binary manually:
 
 ```bash
-claude mcp add mdreview --scope user --command "./mdreview" --args "-port","8080","-workspace","."
+# 1. Install the plugin
+claude plugin add github:sopranoworks/mdreview
+
+# 2. Build the binary
+cd ~/.claude/plugins/mdreview
+go build -o mdreview
 ```
+
+This installation method also enables the **@mdreview** agent within Claude Code, allowing you to simply say:
+`@mdreview preview this README.md`
 
 #### Option D: Install directly from GitHub (Gemini CLI)
 You can install the extension directly from the repository. Note that you will still need to build the binary manually after installation:
