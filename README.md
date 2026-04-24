@@ -83,3 +83,9 @@ This tool is built with a "security-first" approach:
 - **Symlink resolution:** Prevents escaping the workspace via symbolic links.
 - **Strict HTML Sanitization:** Blocks malicious scripts and event handlers.
 - **Random UUIDs:** Preview paths are unguessable.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+Copyright (c) 2026 Sopranoworks, Osamu Takahashi.
