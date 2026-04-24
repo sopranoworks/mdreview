@@ -14,11 +14,26 @@ func ValidatePath(baseDir, targetPath string) (string, error) {
 		return "", fmt.Errorf("failed to get absolute base path: %w", err)
 	}
 
+	// Resolve symlinks in base directory
+	absBase, err = filepath.EvalSymlinks(absBase)
+	if err != nil {
+		return "", fmt.Errorf("failed to resolve symlinks in base path: %w", err)
+	}
+
 	var absTarget string
 	if filepath.IsAbs(targetPath) {
 		absTarget = filepath.Clean(targetPath)
 	} else {
 		absTarget = filepath.Join(absBase, targetPath)
+	}
+
+	// Resolve symlinks in target path
+	// Note: EvalSymlinks requires the path to exist.
+	// If it doesn't exist, we still want to validate the path.
+	// However, for security, we should resolve what we can.
+	resolvedTarget, err := filepath.EvalSymlinks(absTarget)
+	if err == nil {
+		absTarget = resolvedTarget
 	}
 
 	rel, err := filepath.Rel(absBase, absTarget)

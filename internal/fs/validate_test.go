@@ -7,11 +7,28 @@ import (
 )
 
 func TestValidatePath(t *testing.T) {
-	baseDir, err := os.Getwd()
+	tmpDir, err := os.MkdirTemp("", "mdreview-test-*")
 	if err != nil {
-		t.Fatalf("failed to get current directory: %v", err)
+		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	baseDir = filepath.Join(baseDir, "testdata")
+	defer os.RemoveAll(tmpDir)
+
+	baseDir := filepath.Join(tmpDir, "workspace")
+	if err := os.MkdirAll(baseDir, 0755); err != nil {
+		t.Fatalf("failed to create workspace dir: %v", err)
+	}
+
+	// Create a file outside the workspace
+	secretFile := filepath.Join(tmpDir, "secret.txt")
+	if err := os.WriteFile(secretFile, []byte("secret"), 0644); err != nil {
+		t.Fatalf("failed to create secret file: %v", err)
+	}
+
+	// Create a symlink inside the workspace pointing outside
+	symlinkPath := filepath.Join(baseDir, "escape-link")
+	if err := os.Symlink(secretFile, symlinkPath); err != nil {
+		t.Fatalf("failed to create symlink: %v", err)
+	}
 
 	tests := []struct {
 		name       string
@@ -36,6 +53,11 @@ func TestValidatePath(t *testing.T) {
 		{
 			name:       "path traversal attempt with absolute path",
 			targetPath: "/etc/passwd",
+			wantErr:    true,
+		},
+		{
+			name:       "symlink escape attempt",
+			targetPath: "escape-link",
 			wantErr:    true,
 		},
 	}
