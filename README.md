@@ -27,25 +27,30 @@ go build -o mdreview
 
 This will create a `mdreview` executable in the root directory.
 
-### 2. Install as a Plugin (Gemini CLI)
+### 2. Register with Gemini CLI
 
-To add `mdreview` to your Gemini CLI environment, use the `plugin link` command pointing to this directory:
+To make `mdreview` persistent and available in all projects, you can add it to your global configuration:
+
+#### Option A: Global MCP Server (Recommended)
+This registers the server directly in your `~/.gemini/settings.json`:
 
 ```bash
-gemini plugin link .
+gemini mcp add --scope user mdreview ./mdreview -port 8080 -workspace .
 ```
 
-The CLI will read the `plugin.json` file and register the MCP server.
+#### Option B: Link as an Extension
+If you want to use the `plugin.json` manifest (for agent integration/hooks), link this directory:
+
+```bash
+gemini extensions link .
+```
 
 ### 3. Verify Installation
 
-Check that the plugin is listed and enabled:
+Restart your Gemini CLI session and check the connected servers:
 
-```bash
-gemini plugin list
-```
-
-Once linked, any agent in this workspace (or globally, depending on your configuration) will have access to the `preview_markdown` tool.
+- Run `/mcp list` to see `mdreview` and the `preview_markdown` tool.
+- Run `gemini extensions list` (if using Option B) to verify the extension is active.
 
 ## Usage
 
