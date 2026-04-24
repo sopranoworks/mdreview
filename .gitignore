@@ -1,3 +1,19 @@
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Go build/test artifacts
+*.test
+*.out
+vendor/
+bin/
+
+# Project-specific ignores
 .planning/
 docs/
 .gemini/
