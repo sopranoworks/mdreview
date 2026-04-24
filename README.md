@@ -52,6 +52,18 @@ To register the server with Claude Code globally:
 claude mcp add mdreview --scope user --command "./mdreview" --args "-port","8080","-workspace","."
 ```
 
+#### Option D: Install directly from GitHub (Gemini CLI)
+You can install the extension directly from the repository. Note that you will still need to build the binary manually after installation:
+
+```bash
+# 1. Install the extension
+gemini extensions install https://github.com/sopranoworks/mdreview/
+
+# 2. Build the binary
+cd ~/.gemini/extensions/mdreview
+go build -o mdreview
+```
+
 ### 3. Verify Installation
 
 Restart your Gemini CLI session and check the connected servers:
