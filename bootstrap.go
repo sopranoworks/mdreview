@@ -15,10 +15,29 @@ func main() {
 		binaryName += ".exe"
 	}
 
-	// 1. Check if binary exists
-	_, err := os.Stat(binaryName)
-	if os.IsNotExist(err) {
-		fmt.Fprintf(os.Stderr, "Binary not found. Building mdreview for the first time...\n")
+	// 1. Check if binary exists and is up to date
+	binaryStat, err := os.Stat(binaryName)
+	needsBuild := os.IsNotExist(err)
+
+	if !needsBuild {
+		// Check if any .go files are newer than the binary
+		filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+			if err != nil || info.IsDir() {
+				return nil
+			}
+			if filepath.Ext(path) == ".go" && path != "bootstrap.go" {
+				if info.ModTime().After(binaryStat.ModTime()) {
+					needsBuild = true
+					fmt.Fprintf(os.Stderr, "Source file %s is newer than binary. Rebuilding...\n", path)
+					return fmt.Errorf("rebuild needed")
+				}
+			}
+			return nil
+		})
+	}
+
+	if needsBuild {
+		fmt.Fprintf(os.Stderr, "Building mdreview...\n")
 		buildCmd := exec.Command("go", "build", "-o", binaryName, ".")
 		buildCmd.Stdout = os.Stdout
 		buildCmd.Stderr = os.Stderr
