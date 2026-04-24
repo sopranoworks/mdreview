@@ -1,15 +1,14 @@
 package mcp
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 
-	"mdreview/internal/fs"
-	"mdreview/internal/render"
-	"mdreview/internal/server"
+	"github.com/sopranoworks/mdreview/internal/fs"
+	"github.com/sopranoworks/mdreview/internal/render"
+	"github.com/sopranoworks/mdreview/internal/server"
 
 	"github.com/google/uuid"
 )
@@ -65,20 +64,14 @@ func NewMCPServer(workspacePath string, port int, store *server.Store) *MCPServe
 }
 
 func (s *MCPServer) Run() {
-	reader := bufio.NewReader(os.Stdin)
+	decoder := json.NewDecoder(os.Stdin)
 	for {
-		line, err := reader.ReadBytes('\n')
-		if err != nil {
+		var req JSONRPCRequest
+		if err := decoder.Decode(&req); err != nil {
 			if err != io.EOF {
-				fmt.Fprintf(os.Stderr, "Error reading from stdin: %v\n", err)
+				fmt.Fprintf(os.Stderr, "Error decoding request: %v\n", err)
 			}
 			break
-		}
-
-		var req JSONRPCRequest
-		if err := json.Unmarshal(line, &req); err != nil {
-			fmt.Fprintf(os.Stderr, "Error unmarshaling request: %v\n", err)
-			continue
 		}
 
 		var resp JSONRPCResponse
@@ -95,6 +88,8 @@ func (s *MCPServer) Run() {
 					"version": "0.1.0",
 				},
 			}
+		case "ping":
+			resp.Result = map[string]interface{}{}
 		case "tools/list":
 			resp.Result = ListToolsResult{
 				Tools: []Tool{
@@ -151,8 +146,13 @@ func (s *MCPServer) Run() {
 				}
 			}
 		default:
-			// Ignore other methods for now
-			continue
+			if req.ID == nil {
+				continue // Ignore unhandled notifications
+			}
+			resp.Error = map[string]interface{}{
+				"code":    -32601,
+				"message": "Method not found",
+			}
 		}
 
 		out, err := json.Marshal(resp)

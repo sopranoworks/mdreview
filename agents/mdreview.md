@@ -1,3 +1,8 @@
+---
+name: mdreview
+description: An agent that helps you preview Markdown files using the `mdreview` MCP server.
+---
+
 # mdreview Agent
 
 An agent that helps you preview Markdown files using the `mdreview` MCP server.

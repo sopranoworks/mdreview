@@ -42,14 +42,25 @@ Link this directory to enable the plugin manifest and hooks for development:
 gemini extensions link .
 ```
 
-### 2. Register with Claude Code
-
-#### Option D: Claude Code (Plugin)
-Claude Code supports direct plugin installation from GitHub. Installation is **Auto-Build** out of the box:
+#### Option D: Install from GitHub (Claude Code - Recommended)
+To add `mdreview` globally to your Claude Code configuration so it is available in all projects:
 
 ```bash
-# Install and it just works
-claude plugin add github:sopranoworks/mdreview
+claude mcp add --scope user mdreview -- go run github.com/sopranoworks/mdreview@v0.1.0
+```
+
+#### Option E: Local Development (Claude Code)
+If you are developing or testing locally, you can load `mdreview` by specifying its directory when starting Claude:
+
+```bash
+claude --plugin-dir .
+```
+
+#### Option F: Manual Registration (Claude Code)
+To register the server manually in your global Claude configuration:
+
+```bash
+claude mcp add --scope user mdreview -- go run bootstrap.go -port 8080 -workspace .
 ```
 
 ### 3. (Optional) Manual Build

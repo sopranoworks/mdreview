@@ -16,6 +16,9 @@
       ]
     }
   },
+  "agents": {
+    "mdreview": "agents/mdreview.md"
+  },
   "userConfig": {
     "port": {
       "type": "string",
