@@ -7,10 +7,6 @@ import (
 	"os"
 
 	"github.com/sopranoworks/mdreview/internal/fs"
-	"github.com/sopranoworks/mdreview/internal/render"
-	"github.com/sopranoworks/mdreview/internal/server"
-
-	"github.com/google/uuid"
 )
 
 type JSONRPCRequest struct {
@@ -51,16 +47,20 @@ type CallToolResult struct {
 
 type MCPServer struct {
 	workspacePath string
-	port          int
-	store         *server.Store
+	sidecarPort   int
+	sidecarToken  string
 }
 
-func NewMCPServer(workspacePath string, port int, store *server.Store) *MCPServer {
+func NewMCPServer(workspacePath string) *MCPServer {
 	return &MCPServer{
 		workspacePath: workspacePath,
-		port:          port,
-		store:         store,
 	}
+}
+
+func (s *MCPServer) WithSidecar(port int, token string) *MCPServer {
+	s.sidecarPort = port
+	s.sidecarToken = token
+	return s
 }
 
 func (s *MCPServer) Run() {
@@ -171,21 +171,19 @@ func (s *MCPServer) handlePreviewMarkdown(relPath string) (*CallToolResult, erro
 		return nil, err
 	}
 
-	content, err := os.ReadFile(absPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read file: %w", err)
+	if s.sidecarPort == 0 {
+		port, token, err := DiscoverOrStartServer()
+		if err != nil {
+			return nil, fmt.Errorf("failed to discover or start sidecar server: %w", err)
+		}
+		s.sidecarPort = port
+		s.sidecarToken = token
 	}
 
-	html, err := render.RenderMarkdown(string(content))
+	url, err := ProxyPreviewRequest(s.sidecarPort, s.sidecarToken, absPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to render markdown: %w", err)
+		return nil, err
 	}
-
-	id := uuid.New().String()
-	s.store.Set(id, html)
-
-	ip := GetTailscaleIP()
-	url := fmt.Sprintf("http://%s:%d/rev/%s", ip, s.port, id)
 
 	return &CallToolResult{
 		Content: []struct {

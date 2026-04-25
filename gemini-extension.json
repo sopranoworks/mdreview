@@ -2,13 +2,11 @@
   "name": "mdreview",
   "version": "0.1.0",
   "description": "MCP server for rendering Markdown to HTML with Tailscale-accessible previews.",
-  "main": "mdreview",
+  "main": "mdreview-mcp-cli",
   "mcpServers": {
     "mdreview": {
-      "command": "go",
+      "command": "mdreview-mcp-cli",
       "args": [
-        "run",
-        "bootstrap.go",
         "-port",
         "${user_config.port}",
         "-workspace",

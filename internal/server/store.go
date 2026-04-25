@@ -21,6 +21,23 @@ func NewStore() *Store {
 	}
 }
 
+func (s *Store) StartCleanup(interval time.Duration, maxAge time.Duration) {
+	go func() {
+		ticker := time.NewTicker(interval)
+		defer ticker.Stop()
+		for range ticker.C {
+			s.mu.Lock()
+			now := time.Now()
+			for id, p := range s.previews {
+				if now.Sub(p.CreatedAt) > maxAge {
+					delete(s.previews, id)
+				}
+			}
+			s.mu.Unlock()
+		}
+	}()
+}
+
 func (s *Store) Set(id string, content string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -13,11 +13,18 @@ This initial release includes the core MCP server, HTML rendering with `goldmark
 - **XSS Protection:** Strict sanitization using `bluemonday`.
 - **Path Validation:** Prevents path traversal by restricting access to a configured workspace.
 - **Tailscale Integration:** Automatically detects your Tailscale IP to return URLs accessible throughout your Tailnet.
-- **In-Memory Store:** Previews are stored temporarily in memory with unique UUIDs.
+- **Sidecar Architecture:** Uses a persistent background server (`mdreview-mcp-srv`) to manage previews independently of the MCP session.
+- **Auto-Expiration:** Previews are stored temporarily in memory and automatically expire after 24 hours.
 
 ## Installation
 
-`mdreview` supports **zero-setup execution**. If you have Go installed (version 1.23+), you can simply install and it will "just work" everywhere—Windows, macOS, and Linux.
+`mdreview` supports **zero-setup execution**. If you have Go installed (version 1.23+), you can install the binaries with a single command:
+
+```bash
+go install github.com/sopranoworks/mdreview/cmd/...@latest
+```
+
+This will install `mdreview-mcp-cli` and `mdreview-mcp-srv` to your `$GOPATH/bin`.
 
 ### 1. Register with Gemini CLI
 
@@ -29,10 +36,10 @@ gemini extensions install https://github.com/sopranoworks/mdreview
 ```
 
 #### Option B: Global MCP Server (Gemini CLI)
-To register the server directly in your `~/.gemini/settings.json` (useful if you have the binary locally):
+To register the server directly in your `~/.gemini/settings.json`:
 
 ```bash
-gemini mcp add --scope user mdreview go run bootstrap.go -port 8080 -workspace .
+gemini mcp add --scope user mdreview mdreview-mcp-cli -port 8080 -workspace .
 ```
 
 #### Option C: Link as an Extension (Gemini CLI)
@@ -43,10 +50,10 @@ gemini extensions link .
 ```
 
 #### Option D: Install from GitHub (Claude Code - Recommended)
-To add `mdreview` globally to your Claude Code configuration so it is available in all projects:
+To add `mdreview` globally to your Claude Code configuration:
 
 ```bash
-claude mcp add --scope user mdreview -- go run github.com/sopranoworks/mdreview@v0.1.0
+claude mcp add --scope user mdreview -- mdreview-mcp-cli -port 8080 -workspace .
 ```
 
 #### Option E: Local Development (Claude Code)
@@ -60,17 +67,18 @@ claude --plugin-dir .
 To register the server manually in your global Claude configuration:
 
 ```bash
-claude mcp add --scope user mdreview -- go run bootstrap.go -port 8080 -workspace .
+claude mcp add --scope user mdreview -- mdreview-mcp-cli -port 8080 -workspace .
 ```
 
 ### 3. (Optional) Manual Build
-The server will automatically build itself on the first run. However, if you'd like to build the binary manually:
+If you'd like to build the binaries manually from the source:
 
 ```bash
-go build -o mdreview
+go build -o mdreview-mcp-cli ./cmd/mdreview-mcp-cli
+go build -o mdreview-mcp-srv ./cmd/mdreview-mcp-srv
 ```
 
-### 3. Verify Installation
+### 4. Verify Installation
 
 
 Restart your Gemini CLI session and check the connected servers:
