@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -10,17 +11,25 @@ import (
 )
 
 func main() {
+	portFlag := flag.Int("port", 0, "Preferred port for the HTTP sidecar server")
+	workspaceFlag := flag.String("workspace", "", "Path to the workspace root")
+	flag.Parse()
+
 	if len(os.Args) > 1 && os.Args[1] == "--version" {
 		fmt.Printf("mdreview-mcp-cli version %s\n", version.Version)
 		return
 	}
 
-	workspacePath, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("failed to get current directory: %v", err)
+	workspacePath := *workspaceFlag
+	if workspacePath == "" {
+		var err error
+		workspacePath, err = os.Getwd()
+		if err != nil {
+			log.Fatalf("failed to get current directory: %v", err)
+		}
 	}
 
-	port, token, err := mcp.DiscoverOrStartServer()
+	port, token, err := mcp.DiscoverOrStartServer(*portFlag)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: failed to discover or start sidecar server: %v\n", err)
 		os.Exit(1)

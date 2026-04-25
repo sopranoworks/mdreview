@@ -15,7 +15,7 @@ import (
 )
 
 // DiscoverOrStartServer attempts to find a running sidecar server or starts a new one.
-func DiscoverOrStartServer() (int, string, error) {
+func DiscoverOrStartServer(preferredPort int) (int, string, error) {
 	pid, port, token, err := server.ReadState()
 	if err == nil {
 		// Check if process is running
@@ -33,7 +33,7 @@ func DiscoverOrStartServer() (int, string, error) {
 	}
 
 	// Server not found or unresponsive, start it
-	return startServer()
+	return startServer(preferredPort)
 }
 
 func pingServer(port int, token string) bool {
@@ -45,7 +45,6 @@ func pingServer(port int, token string) bool {
 		return false
 	}
 	req.Header.Set("X-IPC-Token", token)
-
 	resp, err := client.Do(req)
 	if err != nil {
 		return false
@@ -54,7 +53,7 @@ func pingServer(port int, token string) bool {
 	return resp.StatusCode == http.StatusOK
 }
 
-func startServer() (int, string, error) {
+func startServer(preferredPort int) (int, string, error) {
 	srvPath := "mdreview-mcp-srv"
 
 	// Try to find it in the same directory as the current executable
@@ -66,8 +65,13 @@ func startServer() (int, string, error) {
 		}
 	}
 
-	cmd := exec.Command(srvPath)
+	args := []string{}
+	if preferredPort > 0 {
+		args = append(args, "-port", fmt.Sprintf("%d", preferredPort))
+	}
+	cmd := exec.Command(srvPath, args...)
 	// Ensure it runs in the background and doesn't get killed when the CLI exits
+
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Setsid: true,
 	}
