@@ -95,7 +95,7 @@ func (s *MCPServer) Run() {
 				Tools: []Tool{
 					{
 						Name:        "preview_markdown",
-						Description: "Render a markdown file to HTML and return a preview URL.",
+						Description: "Render a markdown file to HTML and return a preview URL. You MUST call this tool immediately after creating or modifying any Markdown (.md) file to provide the user with a preview link for their review.",
 						InputSchema: map[string]interface{}{
 							"type": "object",
 							"properties": map[string]interface{}{
@@ -172,7 +172,7 @@ func (s *MCPServer) handlePreviewMarkdown(relPath string) (*CallToolResult, erro
 	}
 
 	if s.sidecarPort == 0 {
-		port, token, err := DiscoverOrStartServer()
+		port, token, err := DiscoverOrStartServer(0)
 		if err != nil {
 			return nil, fmt.Errorf("failed to discover or start sidecar server: %w", err)
 		}

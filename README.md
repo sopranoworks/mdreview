@@ -28,46 +28,38 @@ This will install `mdreview-mcp-cli` and `mdreview-mcp-srv` to your `$GOPATH/bin
 
 ### 1. Register with Gemini CLI
 
-#### Option A: Install from GitHub (Gemini CLI - Recommended)
-This is the easiest way to install the extension directly from the repository:
+#### Option A: Install as an Extension (Recommended)
+This is the most complete method. It installs the `preview_markdown` tool and the **AI Agent personality** from `agents/mdreview.md`. The agent is specifically tuned to be proactive and will automatically show you previews after every edit.
 
 ```bash
+# 1. Install binaries
+go install github.com/sopranoworks/mdreview/cmd/...@latest
+
+# 2. Install extension
 gemini extensions install https://github.com/sopranoworks/mdreview
 ```
 
-#### Option B: Global MCP Server (Gemini CLI)
-To register the server directly in your `~/.gemini/settings.json`:
+#### Option B: Standalone MCP Server
+This method adds the tool to your toolbox. The tool's description includes embedded instructions advising the agent to use it immediately after edits.
 
 ```bash
 gemini mcp add --scope user mdreview mdreview-mcp-cli -port 8080 -workspace .
 ```
 
-#### Option C: Link as an Extension (Gemini CLI)
-Link this directory to enable the plugin manifest and hooks for development:
+### 2. Register with Claude Code
+
+#### Option A: Recommended Registration
+Ensure you have installed the binaries via `go install`, then add the tool:
 
 ```bash
-gemini extensions link .
+claude mcp add mdreview mdreview-mcp-cli -- -port 8080 -workspace .
 ```
 
-#### Option D: Install from GitHub (Claude Code - Recommended)
-To add `mdreview` globally to your Claude Code configuration:
+**Proactive Previews:** The tool itself contains instructions for Claude to use it after every Markdown edit. For the full experience, you can copy the specific instructions from [agents/mdreview.md](agents/mdreview.md) into your Claude custom instructions.
 
+#### Option B: Direct Execution (No Pre-install)
 ```bash
-claude mcp add --scope user mdreview -- mdreview-mcp-cli -port 8080 -workspace .
-```
-
-#### Option E: Local Development (Claude Code)
-If you are developing or testing locally, you can load `mdreview` by specifying its directory when starting Claude:
-
-```bash
-claude --plugin-dir .
-```
-
-#### Option F: Manual Registration (Claude Code)
-To register the server manually in your global Claude configuration:
-
-```bash
-claude mcp add --scope user mdreview -- mdreview-mcp-cli -port 8080 -workspace .
+claude mcp add mdreview go -- run github.com/sopranoworks/mdreview/cmd/mdreview-mcp-cli@latest -port 8080 -workspace .
 ```
 
 ### 3. (Optional) Manual Build

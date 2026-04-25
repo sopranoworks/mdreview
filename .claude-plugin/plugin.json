@@ -2,10 +2,10 @@
   "name": "mdreview",
   "version": "0.1.0",
   "description": "MCP server for rendering Markdown to HTML with Tailscale-accessible previews.",
-  "main": "mdreview",
+  "main": "mdreview-mcp-cli",
   "mcpServers": {
     "mdreview": {
-      "command": "./mdreview",
+      "command": "mdreview-mcp-cli",
       "args": [
         "-port",
         "${user_config.port}",
