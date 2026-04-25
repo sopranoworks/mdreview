@@ -1,11 +1,20 @@
 # mdreview
 
-![Version](https://img.shields.io/badge/version-v0.1.0-blue)
+![Version](https://img.shields.io/badge/version-v0.2.0-green)
 
 `mdreview` is an MCP (Model Context Protocol) server that allows AI agents to render Markdown files to sanitized HTML and provide a temporary preview URL. It is specifically designed to work across devices using Tailscale.
 
-## Current Version: v0.1.0
-This initial release includes the core MCP server, HTML rendering with `goldmark`, XSS sanitization, and Tailscale IP detection.
+## Current Version: v0.2.0 (Split Sidecar Edition)
+This major update introduces a persistent architecture and significant security hardening.
+
+### What's New in v0.2.0:
+- **Split Sidecar Architecture**: Separation into `mdreview-mcp-srv` (persistent background server) and `mdreview-mcp-cli` (transient MCP handler).
+- **Session Persistence**: Previews now stay alive even after the AI agent session ends.
+- **Security Hardening**:
+  - **Token-based IPC**: Communication between CLI and Server is secured with random per-session tokens.
+  - **Salted Preview IDs**: URLs are now unpredictable, generated using a combination of the IPC token and file path.
+  - **Least Privilege**: State files are restricted to `0600` permissions and are user-specific.
+- **Improved Installation**: Direct `go install` of specific binaries.
 
 ## Features
 

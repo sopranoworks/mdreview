@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/sopranoworks/mdreview/internal/fs"
+	"github.com/sopranoworks/mdreview/internal/version"
 )
 
 type JSONRPCRequest struct {
@@ -85,7 +86,7 @@ func (s *MCPServer) Run() {
 				"capabilities":    map[string]interface{}{},
 				"serverInfo": map[string]string{
 					"name":    "mdreview",
-					"version": "0.1.0",
+					"version": version.Version,
 				},
 			}
 		case "ping":
